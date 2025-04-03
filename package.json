@@ -1,0 +1,33 @@
+{
+  "name": "mcp-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tsx": "^4.19.3"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.61.0",
+    "@langchain/core": "^0.3.43",
+    "@langchain/langgraph": "^0.2.62",
+    "@langchain/openai": "^0.5.2",
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "dotenv": "^16.4.7",
+    "hedera-agent-kit": "^1.0.5",
+    "zod": "^3.24.2"
+  },
+  "files": [
+    "build"
+  ],
+  "bin": {
+    "calculator": "./build/index.js"
+  }
+}
