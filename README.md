@@ -45,6 +45,17 @@ The whole thing consists of two services that we need to run.
 
 -   **Interact with Hedera:** This core functionality enables the server to make calls to the running Langchain wrapper service. The wrapper then interprets these requests and performs the corresponding actions on the Hedera network (e.g., creating tokens, transferring HBAR, interacting with smart contracts).
 
+## Standard configuration (e.g. for cursor)
+```
+{
+  "mcpServers": {
+      "hedera": {
+          "url": "http://localhost:3000/sse"
+      }
+  }
+}
+```
+
 ## Simplified Architecture
 
 ![Architecture Diagram](./docs/architecture.png) 
