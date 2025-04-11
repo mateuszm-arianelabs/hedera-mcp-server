@@ -1,0 +1,25 @@
+{
+  "name": "langchain-proxy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@langchain/core": "^0.3.43",
+    "@langchain/langgraph": "^0.2.62",
+    "@langchain/openai": "^0.5.2",
+    "@types/express": "^5.0.1",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "hedera-agent-kit": "^1.0.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3"
+  }
+}

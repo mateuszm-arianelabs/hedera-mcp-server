@@ -45,4 +45,53 @@ Additionally, you must have the [Hedera Langchain Wrapper](https://github.com/ma
 
 ## Simplified Architecture
 
-![Architecture Diagram](./docs/architecture.png)
+![Architecture Diagram](./docs/architecture.png) 
+
+## API Documentation (langchain-proxy)
+
+### POST /interact-with-hedera
+
+Interact with Hedera blockchain using natural language prompts.
+
+#### Request
+
+```
+POST /interact-with-hedera
+Content-Type: application/json
+
+{
+  "fullPrompt": "Create a new NFT collection called My Awesome Collection"
+}
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| fullPrompt | string | Natural language instruction for Hedera operations |
+
+#### Response
+
+```json
+{
+  "content": [
+    {
+      "type": "object",
+      "content": {
+        // Response content from Hedera operations
+      }
+    }
+  ]
+}
+```
+
+In case of an error:
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "content": "An error occurred while interacting with Hedera: [error message]"
+    }
+  ]
+}
+```

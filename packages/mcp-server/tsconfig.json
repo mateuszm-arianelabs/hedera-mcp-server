@@ -4,12 +4,12 @@
     "module": "Node16",
     "moduleResolution": "Node16",
     "outDir": "./build",
-    "rootDir": "./src",
+    "rootDir": "packages/mcp-server/src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
+  "include": ["packages/mcp-server/src/**/*"],
   "exclude": ["node_modules"]
 }
