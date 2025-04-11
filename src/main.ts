@@ -4,6 +4,48 @@ import "dotenv/config"
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import express from "express"
 
+// Helper function for the tool logic
+export async function handleHederaInteraction(fullPrompt: string, apiUrl: string | undefined) {
+  if (!apiUrl) {
+    return {
+      content: [{ type: "text" as const, text: "API_URL environment variable is not set." }]
+    };
+  }
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        fullPrompt
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+
+    // Assuming the API returns an object that needs to be stringified for the MCP response
+    return {
+      content: [{ type: "text" as const, text: JSON.stringify(data) }]
+    };
+  } catch (e) {
+    let errorString: string;
+    if (e instanceof Error) {
+      errorString = e.toString();
+    } else {
+      errorString = String(e);
+    }
+    return {
+      content: [{ type: "text" as const, text: `An error occurred while interacting with Hedera: ${errorString}` }]
+    };
+  }
+}
+
 // Create an MCP server
 const server = new McpServer({
   name: "Hedera MCP Server",
@@ -15,34 +57,7 @@ const app = express();
 server.tool("interact-with-hedera", {
   fullPrompt: z.string()
 }, async ({ fullPrompt }) => {
-  
-  try {
-    const response = await fetch(`${process.env.API_URL}/interact-with-hedera`, {
-      method: "POST",
-      body: JSON.stringify({
-        fullPrompt
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-
-    const data = await response.json();
-
-    return {
-      content: [{ type: "text", text: JSON.stringify(data) }]
-    }
-  } catch (e) {
-    let errorString: string;
-    if (e instanceof Error) {
-      errorString = e.toString();
-    } else {
-      errorString = String(e);
-    }
-    return {
-      content: [{ type: "text", text: `An error occurred while interacting with Hedera: ${errorString}` }]
-    }
-  }
+  return handleHederaInteraction(fullPrompt, process.env.API_URL);
 })
 
 // Communication layer
