@@ -75,8 +75,8 @@ app.get("/sse", async (req, res) => {
   // Parse the env variable as an array (assuming it's a comma-separated string)
   const validTokens = process.env.MCP_AUTH_TOKEN?.split(',').map(t => t.trim());
 
-  if (!token || !validTokens || !validTokens.includes(token)) {
-    return res.status(401).json({
+  if (!token || !validTokens || !validTokens.includes(token as string)) {
+    res.status(401).json({
       content: [
         {
           type: "text",
@@ -84,6 +84,7 @@ app.get("/sse", async (req, res) => {
         }
       ]
     });
+    return;
   }
 
   const transport = new SSEServerTransport('/messages', res);
