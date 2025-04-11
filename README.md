@@ -23,7 +23,13 @@ The whole thing consists of two services that we need to run.
         - packages/langchain-proxy
         - packages/mcp-server
 
-    - Edit the `.env` file and fill in the required configuration values (e.g., Hedera keys, network details).
+Edit the `.env` file and fill in the required configuration values (e.g., Hedera keys, network details).
+```shell
+API_URL=                  # url to langchain proxy endpoint
+PORT=                     # port on which MCP server will be started
+MCP_AUTH_TOKEN=           # array of accepted tokens separated by comas
+LANGCHAIN_PROXY_TOKEN=    # token for accessing the Langchain proxy
+```
 
 3.  **Install dependencies:**
     ```sh
@@ -45,16 +51,42 @@ The whole thing consists of two services that we need to run.
 
 -   **Interact with Hedera:** This core functionality enables the server to make calls to the running Langchain wrapper service. The wrapper then interprets these requests and performs the corresponding actions on the Hedera network (e.g., creating tokens, transferring HBAR, interacting with smart contracts).
 
-## Standard configuration (e.g. for cursor)
+## Configuration for Visual Studio Code
+To establish a connection with an MCP server, the `MCP_AUTH_TOKEN` header is required.
+
+Below is an example .vscode/settings.json configuration for Visual Studio Code:
+
 ```
 {
-  "mcpServers": {
-      "hedera": {
-          "url": "http://localhost:3000/sse"
-      }
-  }
+    "mcp": {
+        "inputs": [],
+        "servers": {
+            "hedera": {
+                "type": "sse",
+                "url": "http://localhost:3000/sse",
+                "headers": { "MCP_AUTH_TOKEN": "your-mcp-auth-token"}
+            }
+        }
+    }
 }
 ```
+
+Note: Currently, passing additional headers (such as MCP_AUTH_TOKEN) is not supported in Cursor IDE.
+Source: Cursor Forum
+However, MCP integration is evolving rapidly, and support for custom headers is expected to be added in future versions of Cursor and other MCP Client Tools.
+
+## Potential Transition to OAuth
+
+As of **March 2025**, the official MCP OAuth specification has been published, but it still has several limitations and implementation challenges. A revision of the approach is likely ([source](https://auth0.com/blog/an-introduction-to-mcp-and-authorization/)).
+
+In preparation for future OAuth integration, here are some example repositories that showcase MCP + OAuth setups:
+
+- [Cloudflare MCP + Auth0](https://github.com/cloudflare/ai/tree/main/demos/remote-mcp-auth0)
+- [Cloudflare MCP + GitHub OAuth](https://github.com/cloudflare/ai/tree/main/demos/remote-mcp-github-oauth)
+- [Geelen’s MCP Remote Example](https://github.com/geelen/mcp-remote)
+
+These can be used as references when considering OAuth-based authentication for MCP servers in future development phases.
+
 
 ## Simplified Architecture
 
@@ -62,49 +94,39 @@ The whole thing consists of two services that we need to run.
 
 ## API Documentation (langchain-proxy)
 
-### POST /interact-with-hedera
+### GET /sse
 
-Interact with Hedera blockchain using natural language prompts.
+Establishes a Server-Sent Events (SSE) connection with the MCP server.
 
 #### Request
 
 ```
-POST /interact-with-hedera
-Content-Type: application/json
-
-{
-  "fullPrompt": "Create a new NFT collection called My Awesome Collection"
-}
+GET /sse
+mcp_auth_token: example-token
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| fullPrompt | string | Natural language instruction for Hedera operations |
+| Header     | Type | Description                                                                                                   |
+|------------|------|---------------------------------------------------------------------------------------------------------------|
+| fullPrompt | string | Required authentication token that must match one of the tokens in servers env file (MCP_AUTH_TOKEN variable) |
 
 #### Response
 
+On successful authentication, establishes an SSE connection with content type `text/event-stream`.
+
+**Status Codes**
+
+`200 OK`: Connection established successfully
+`401 Unauthorized`: Invalid or missing authentication token
+
+**Error response**
 ```json
 {
-  "content": [
-    {
-      "type": "object",
-      "content": {
-        // Response content from Hedera operations
-      }
+      "content": [
+        {
+          "type": "text",
+          "content": "Unauthorized: Invalid or missing MCP_AUTH_TOKEN header"
+        }
+      ]
     }
-  ]
-}
 ```
 
-In case of an error:
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "content": "An error occurred while interacting with Hedera: [error message]"
-    }
-  ]
-}
-```
