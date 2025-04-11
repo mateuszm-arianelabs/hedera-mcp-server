@@ -5,13 +5,12 @@ This project provides a server that integrates with a Langchain wrapper to inter
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
-- Node.js (v18 or later recommended)
+- Node.js (20 or later recommended)
 - pnpm (`npm install -g pnpm`)
 - Git
 
-Additionally, you must have the [Hedera Langchain Wrapper](https://github.com/mateuszm-arianelabs/hedera-langchain-wrapper) service installed and running in the background. This server relies on the wrapper to communicate with the Hedera network.
-
 ## Quickstart
+The whole thing consists of two services that we need to run.
 
 1.  **Clone the repository:**
     ```sh
@@ -19,23 +18,26 @@ Additionally, you must have the [Hedera Langchain Wrapper](https://github.com/ma
     cd hedera-mcp-server
     ```
 
-2.  **Set up environment variables:**
-    - Copy the example environment file:
-      ```sh
-      cp .env.example .env
-      ```
-    - Edit the `.env` file and fill in the required configuration values (e.g., API keys, network details).
+2.  **Set up environment variables in packages:**
+    - You need to copy the .env.example file and create .env from it in two locations:
+        - packages/langchain-proxy
+        - packages/mcp-server
+
+    - Edit the `.env` file and fill in the required configuration values (e.g., Hedera keys, network details).
 
 3.  **Install dependencies:**
     ```sh
     pnpm install
     ```
 
-4.  **Ensure the [Hedera Langchain Wrapper](https://github.com/mateuszm-arianelabs/hedera-langchain-wrapper) service is running.**
-
-5.  **Run the server:**
+4.  **Start Lang chain Proxy Service**
+    ```
+    pnpm run dev:lc
+    ```
+    (Or `pnpm start` for production mode, if configured).
+5.  **Run the mcp server:**
     ```sh
-    pnpm run dev
+    pnpm run dev:mcp
     ```
     (Or `pnpm start` for production mode, if configured).
 
