@@ -60,7 +60,7 @@ LANGCHAIN_PROXY_TOKEN: your-langchain-token
 
 | Header     | Type | Description |
 |------------|------|-------------|
-| LANGCHAIN_PROXY_TOKEN | string | Required authentication token that must match the LANGCHAIN_PROXY_TOKEN environment variable |
+| X-LANGCHAIN-PROXY-TOKEN | string | Required authentication token that must match the LANGCHAIN_PROXY_TOKEN environment variable |
 
 #### Response
 
@@ -79,7 +79,7 @@ LANGCHAIN_PROXY_TOKEN: your-langchain-token
 
 **Status Codes**
 `200 OK`: Request processed successfully
-`401 Unauthorized`: Invalid or missing LANGCHAIN_PROXY_TOKEN header
+`401 Unauthorized`: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header
 
 **Error Response**
 ```json
@@ -87,7 +87,7 @@ LANGCHAIN_PROXY_TOKEN: your-langchain-token
   "content": [
     {
       "type": "text",
-      "content": "Unauthorized: Invalid or missing LANGCHAIN_PROXY_TOKEN header"
+      "content": "Unauthorized: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header"
     }
   ]
 }

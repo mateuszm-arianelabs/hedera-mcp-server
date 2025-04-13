@@ -10,15 +10,15 @@ const port = process.env.PORT || 3001;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Middleware to check LANGCHAIN_PROXY_TOKEN header
+// Middleware to check X-LANGCHAIN-PROXY-TOKEN header
 function verifyLangchainProxyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.header("LANGCHAIN_PROXY_TOKEN");
+  const token = req.header("X-LANGCHAIN-PROXY-TOKEN");
   if (!token || token !== process.env.LANGCHAIN_PROXY_TOKEN) {
     return res.status(401).json({
       content: [
         {
           type: "text",
-          content: "Unauthorized: Invalid or missing LANGCHAIN_PROXY_TOKEN header"
+          content: "Unauthorized: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header"
         }
       ]
     });
@@ -42,7 +42,7 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
       configurable: {
-        thread_id: "MCP Server - langchain"
+        thread_id: "MCP Server - langchain" // TODO: add separate thread id for each MCP Server Client
       }
     });
 

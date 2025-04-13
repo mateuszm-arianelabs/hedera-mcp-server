@@ -37,7 +37,7 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
-        'LANGCHAIN_PROXY_TOKEN': 'some-token'
+        'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
       },
     });
     expect(result.content[0].type).toBe('text');
@@ -62,7 +62,7 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
-        'LANGCHAIN_PROXY_TOKEN': 'some-token'
+        'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
       },
     });
     expect(result.content[0].type).toBe('text');
@@ -110,7 +110,7 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
-        'LANGCHAIN_PROXY_TOKEN': ''  // Should send empty string when token is undefined
+        'X-LANGCHAIN-PROXY-TOKEN': ''  // Should send empty string when token is undefined
       },
     });
     expect(result.content[0].type).toBe('text');

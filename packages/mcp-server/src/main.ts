@@ -22,7 +22,7 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
       }),
       headers: {
         "Content-Type": "application/json",
-        "LANGCHAIN_PROXY_TOKEN": token || ""
+        "X-LANGCHAIN-PROXY-TOKEN": token || ""
       }
     });
 
@@ -70,17 +70,19 @@ type SessionId = string;
 const transports: Map<SessionId, SSEServerTransport> = new Map()
 
 app.get("/sse", async (req, res) => {
-  const token = req.headers['mcp_auth_token'];
+  const token = req.headers['x-mcp-auth-token'];
+  console.log(`token: ${token}`);
 
   // Parse the env variable as an array (assuming it's a comma-separated string)
   const validTokens = process.env.MCP_AUTH_TOKEN?.split(',').map(t => t.trim());
+  console.log(`validTokens: ${validTokens}`);
 
   if (!token || !validTokens || !validTokens.includes(token as string)) {
     res.status(401).json({
       content: [
         {
           type: "text",
-          content: "Unauthorized: Invalid or missing MCP_AUTH_TOKEN header"
+          content: "Unauthorized: Invalid or missing X-MCP-AUTH-TOKEN header"
         }
       ]
     });
