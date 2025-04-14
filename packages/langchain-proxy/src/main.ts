@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import "dotenv/config";
 import { createLangchain } from "./create-langchain.js";
@@ -15,7 +15,7 @@ app.use(express.json());
 function verifyLangchainProxyToken(req: Request, res: Response, next: NextFunction) {
   const token = req.header("X-LANGCHAIN-PROXY-TOKEN");
   if (!token || token !== process.env.LANGCHAIN_PROXY_TOKEN) {
-    return res.status(401).json({
+    res.status(401).json({
       content: [
         {
           type: "text",
@@ -23,6 +23,7 @@ function verifyLangchainProxyToken(req: Request, res: Response, next: NextFuncti
         }
       ]
     });
+    return;
   }
   next();
 }
