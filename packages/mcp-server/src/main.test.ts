@@ -1,8 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handleHederaInteraction } from './main.js';
 
 // Mock the global fetch function
 global.fetch = vi.fn();
+
+// Store the original process.env
+const originalEnv = { ...process.env };
 
 describe('handleHederaInteraction', () => {
   const mockApiUrl = 'http://localhost:3000/interact-with-hedera';
@@ -10,6 +13,10 @@ describe('handleHederaInteraction', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
+    // Reset process.env before each test
+    process.env = { ...originalEnv };
+    // Set the token for tests
+    process.env.LANGCHAIN_PROXY_TOKEN = 'some-token';
   });
 
   it('should return success response when API call is successful', async () => {
@@ -25,9 +32,12 @@ describe('handleHederaInteraction', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledWith(mockApiUrl, {
       method: 'POST',
-      body: JSON.stringify({ fullPrompt: testPrompt }),
+      body: JSON.stringify({
+        fullPrompt: testPrompt
+      }),
       headers: {
         'Content-Type': 'application/json',
+        'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
       },
     });
     expect(result.content[0].type).toBe('text');
@@ -39,7 +49,7 @@ describe('handleHederaInteraction', () => {
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
       status: 500,
-      text: async () => mockErrorText, // Use text() for non-ok responses
+      text: async () => mockErrorText,
     });
 
     const result = await handleHederaInteraction(testPrompt, mockApiUrl);
@@ -47,9 +57,12 @@ describe('handleHederaInteraction', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledWith(mockApiUrl, {
       method: 'POST',
-      body: JSON.stringify({ fullPrompt: testPrompt }),
+      body: JSON.stringify({
+        fullPrompt: testPrompt
+      }),
       headers: {
         'Content-Type': 'application/json',
+        'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
       },
     });
     expect(result.content[0].type).toBe('text');
@@ -76,4 +89,31 @@ describe('handleHederaInteraction', () => {
     expect(result.content[0].type).toBe('text');
     expect(result.content[0].text).toBe('API_URL environment variable is not set.');
   });
-}); 
+
+  it('should handle empty LANGCHAIN_PROXY_TOKEN', async () => {
+    // Set token to undefined for this test
+    delete process.env.LANGCHAIN_PROXY_TOKEN;
+
+    const mockResponseData = { success: true, data: 'some data' };
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => mockResponseData,
+      status: 200
+    });
+
+    const result = await handleHederaInteraction(testPrompt, mockApiUrl);
+
+    expect(fetch).toHaveBeenCalledWith(mockApiUrl, {
+      method: 'POST',
+      body: JSON.stringify({
+        fullPrompt: testPrompt
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-LANGCHAIN-PROXY-TOKEN': ''  // Should send empty string when token is undefined
+      },
+    });
+    expect(result.content[0].type).toBe('text');
+    expect(result.content[0].text).toBe(JSON.stringify(mockResponseData));
+  });
+});

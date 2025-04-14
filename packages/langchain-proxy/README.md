@@ -22,11 +22,12 @@ pnpm install
 3. Create `.env` file based on `.env.example`
 ```sh
 # Required environment variables
-HEDERA_ACCOUNT_ID=      # Your Hedera account ID
-HEDERA_PRIVATE_KEY=     # Your Hedera private key
-HEDERA_NETWORK_TYPE=    # 'mainnet', 'testnet', or 'previewnet'
-HEDERA_KEY_TYPE=        # Your Hedera key type
-OPENAI_API_KEY=         # Your OpenAI API key
+HEDERA_ACCOUNT_ID=        # Your Hedera account ID
+HEDERA_PRIVATE_KEY=       # Your Hedera private key
+HEDERA_NETWORK_TYPE=      # 'mainnet', 'testnet', or 'previewnet'
+HEDERA_KEY_TYPE=          # Your Hedera key type
+OPENAI_API_KEY=           # Your OpenAI API key
+LANGCHAIN_PROXY_TOKEN=    # static token for accepting request from MCP server
 ```
 4. Start the development server
 ```sh
@@ -45,6 +46,7 @@ Interact with Hedera blockchain using natural language prompts.
 ```
 POST /interact-with-hedera
 Content-Type: application/json
+LANGCHAIN_PROXY_TOKEN: your-langchain-token
 
 {
   "fullPrompt": "Create a new NFT collection called My Awesome Collection"
@@ -54,6 +56,11 @@ Content-Type: application/json
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | fullPrompt | string | Natural language instruction for Hedera operations |
+
+
+| Header     | Type | Description |
+|------------|------|-------------|
+| X-LANGCHAIN-PROXY-TOKEN | string | Required authentication token that must match the LANGCHAIN_PROXY_TOKEN environment variable |
 
 #### Response
 
@@ -70,7 +77,23 @@ Content-Type: application/json
 }
 ```
 
-In case of an error:
+**Status Codes**
+`200 OK`: Request processed successfully
+`401 Unauthorized`: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header
+
+**Error Response**
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "content": "Unauthorized: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header"
+    }
+  ]
+}
+```
+
+For other errors:
 
 ```json
 {
