@@ -39,10 +39,13 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
     const data = await response.json();
     Logger.debug("Received response from Langchain proxy:", data);
 
-    // Assuming the API returns an object that needs to be stringified for the MCP response
-    return {
-      content: [{type: "text" as const, text: JSON.stringify(data)}]
-    };
+    if(data.success) {
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(data.data) }]
+      };
+    } else {
+      throw new Error(data.error);
+    }
   } catch (e) {
     Logger.error("Error during Hedera interaction handling:", e);
     let errorString: string;

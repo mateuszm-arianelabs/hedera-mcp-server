@@ -62,7 +62,8 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
     Logger.debug("Tool response text:", responseText);
 
     res.json({
-      content: [{ type: "object", content: JSON.parse(responseText) }]
+      success: true,
+      data: JSON.parse(responseText)
     });
     Logger.log("Successfully responded to /interact-with-hedera");
   } catch (e) {
@@ -75,7 +76,8 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
       errorString = String(e);
     }
     res.json({
-      content: [{type: "text", content: `An error occurred while interacting with Hedera: ${errorString}`}]
+      success: false,
+      error: errorString
     })
   }
 });
