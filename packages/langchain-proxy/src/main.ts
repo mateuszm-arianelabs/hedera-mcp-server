@@ -16,12 +16,8 @@ function verifyLangchainProxyToken(req: Request, res: Response, next: NextFuncti
   const token = req.header("X-LANGCHAIN-PROXY-TOKEN");
   if (!token || token !== process.env.LANGCHAIN_PROXY_TOKEN) {
     res.status(401).json({
-      content: [
-        {
-          type: "text",
-          content: "Unauthorized: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header"
-        }
-      ]
+      success: false,
+      error: "Unauthorized: Invalid or missing X-LANGCHAIN-PROXY-TOKEN header"
     });
     return;
   }
