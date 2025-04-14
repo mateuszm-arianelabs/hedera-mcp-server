@@ -1,0 +1,33 @@
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: packages/mcp-server/Dockerfile
+    ports:
+      - "3000:3000" # Expose mcp-server on host port 3000, mapping to container port 3000
+    env_file:
+      - ./packages/mcp-server/.env # Load environment variables from this file
+    environment:
+      - PORT=3000 # Ensure the container uses port 3000
+      - API_URL=http://langchain-proxy:3001/interact-with-hedera
+    depends_on:
+      - langchain-proxy # Ensure langchain-proxy starts before mcp-server
+    networks:
+      - hedera-network
+
+  langchain-proxy:
+    build:
+      context: .
+      dockerfile: packages/langchain-proxy/Dockerfile
+    ports:
+      - "3001:3001" # Expose langchain-proxy on host port 3001, mapping to container port 3001
+    env_file:
+      - ./packages/langchain-proxy/.env # Load environment variables from this file
+    environment:
+      - PORT=3001 # Ensure the container uses port 3001
+    networks:
+      - hedera-network
+
+networks:
+  hedera-network:
+    driver: bridge 
