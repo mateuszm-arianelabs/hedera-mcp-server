@@ -1,8 +1,9 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import { z } from "zod";
 import "dotenv/config";
 import { createLangchain } from "./create-langchain.js";
 import { HumanMessage, ToolMessage } from "@langchain/core/messages";
+import { Logger } from "@mcp/logger";
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -26,7 +27,9 @@ function verifyLangchainProxyToken(req: Request, res: Response, next: NextFuncti
   next();
 }
 
+Logger.log("Initializing Langchain...");
 const langchain = createLangchain();
+Logger.log("Langchain initialized.");
 
 // Define the schema for the request body
 const interactSchema = z.object({
@@ -34,10 +37,12 @@ const interactSchema = z.object({
 });
 
 app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) => {
-  console.log(req.body);
+  Logger.debug("Received request for /interact-with-hedera");
+  Logger.debug("Request body:", req.body);
 
   try {
     const body = interactSchema.parse(req.body);
+    Logger.log(`Invoking Langchain with prompt: ${body.fullPrompt.substring(0, 50)}...`);
     const result = await langchain.invoke({
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
@@ -45,19 +50,23 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
         thread_id: "MCP Server - langchain" // TODO: add separate thread id for each MCP Server Client
       }
     });
+    Logger.debug("Langchain invocation successful.", result);
 
     const toolResponse = result.messages.find(m => m instanceof ToolMessage);
     if (!toolResponse) {
+      Logger.error("No tool response found in Langchain result.");
       throw new Error("No tool response found");
     }
 
     const responseText = toolResponse.content.toString();
+    Logger.debug("Tool response text:", responseText);
 
     res.json({
-      content: [{type: "object", content: JSON.parse(responseText)}]
+      content: [{ type: "object", content: JSON.parse(responseText) }]
     });
+    Logger.log("Successfully responded to /interact-with-hedera");
   } catch (e) {
-    console.error(e);
+    Logger.error("Error processing /interact-with-hedera request:", e);
 
     let errorString = "Unknown error";
     if (e instanceof Error) {
@@ -72,5 +81,5 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
 });
 
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  Logger.log(`Server listening on port ${port}`);
 });
