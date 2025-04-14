@@ -2,33 +2,26 @@
   "name": "mcp-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "dev": "tsx watch src/main.ts",
-    "build": "tsc",
-    "test": "vitest"
+    "build": "tsc"
   },
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.1",
-    "jsdom": "^26.0.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
     "vitest": "^3.1.1"
   },
   "dependencies": {
-    "@hashgraph/sdk": "^2.61.0",
-    "@langchain/core": "^0.3.43",
-    "@langchain/langgraph": "^0.2.62",
-    "@langchain/openai": "^0.5.2",
-    "@modelcontextprotocol/sdk": "^1.8.0",
-    "dotenv": "^16.4.7",
-    "express": "^5.1.0",
-    "hedera-agent-kit": "^1.0.5",
-    "zod": "^3.24.2"
+    "@mcp/logger": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "zod": "^3.23.8"
   },
   "files": [
     "build"
