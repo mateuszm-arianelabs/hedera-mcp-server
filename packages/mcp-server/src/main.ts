@@ -18,6 +18,7 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
   Logger.log(`Forwarding request to Langchain proxy: ${apiUrl}`);
   try {
     const token = process.env.LANGCHAIN_PROXY_TOKEN;
+    const isCustodial = process.env.CUSTODIAL_MODE;
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -26,7 +27,8 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
       }),
       headers: {
         "Content-Type": "application/json",
-        "X-LANGCHAIN-PROXY-TOKEN": token || ""
+        "X-LANGCHAIN-PROXY-TOKEN": token || "",
+        "X-CUSTODIAL-MODE": isCustodial || "false"
       }
     });
 

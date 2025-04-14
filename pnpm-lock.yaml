@@ -32,8 +32,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       hedera-agent-kit:
-        specifier: ^1.0.5
-        version: 1.0.5(bn.js@5.2.1)(expo@52.0.42(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0))(openai@4.91.0(ws@8.18.1)(zod@3.24.2))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0)(ws@8.18.1)(zod-to-json-schema@3.24.5(zod@3.24.2))
+        specifier: ^1.0.6
+        version: 1.0.6(bn.js@5.2.1)(expo@52.0.42(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0))(openai@4.91.0(ws@8.18.1)(zod@3.24.2))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0)(ws@8.18.1)(zod-to-json-schema@3.24.5(zod@3.24.2))
       zod:
         specifier: ^3.24.2
         version: 3.24.2
@@ -2498,8 +2498,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hedera-agent-kit@1.0.5:
-    resolution: {integrity: sha512-E9fAF0a4+r/a/vY0QyPASSSB8oX1XnZgGcgf8s8ZaEOloNjbJmzNx+MoGT+OGHiXLymGYwoFlwgj+0QIdZdVGA==}
+  hedera-agent-kit@1.0.6:
+    resolution: {integrity: sha512-FlPzuE+5L/gye/mhPo7WZ+vJfyrzPc9UJ2FzMEYbM2ten613jkQCmNSs42lX9w9Uu4nuUd7aO+n5tZUiDsHoZA==}
 
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
@@ -7480,7 +7480,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hedera-agent-kit@1.0.5(bn.js@5.2.1)(expo@52.0.42(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0))(openai@4.91.0(ws@8.18.1)(zod@3.24.2))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0)(ws@8.18.1)(zod-to-json-schema@3.24.5(zod@3.24.2)):
+  hedera-agent-kit@1.0.6(bn.js@5.2.1)(expo@52.0.42(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0))(openai@4.91.0(ws@8.18.1)(zod@3.24.2))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0)(ws@8.18.1)(zod-to-json-schema@3.24.5(zod@3.24.2)):
     dependencies:
       '@hashgraph/sdk': 2.61.0(bn.js@5.2.1)(expo@52.0.42(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))(react@19.1.0))(react-native@0.78.1(@babel/core@7.26.10)(@babel/preset-env@7.26.9(@babel/core@7.26.10))(react@19.1.0))
       '@langchain/core': 0.3.43(openai@4.91.0(ws@8.18.1)(zod@3.24.2))
