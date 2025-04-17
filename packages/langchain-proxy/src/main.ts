@@ -50,7 +50,6 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
         isCustodial,
       }
     });
-    Logger.debug("Langchain invocation successful.", result);
 
     const toolResponse = result.messages.find(
       m => m.constructor.name === "ToolMessage"

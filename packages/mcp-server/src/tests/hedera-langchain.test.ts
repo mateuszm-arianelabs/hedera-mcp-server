@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { handleHederaInteraction } from './main.js';
+import {handleHederaInteraction} from "../modules/hedera-langchain.js";
 
 // Mock the global fetch function
 global.fetch = vi.fn();
@@ -20,7 +20,8 @@ describe('handleHederaInteraction', () => {
   });
 
   it('should return success response when API call is successful', async () => {
-    const mockResponseData = { success: true, data: 'some data' };
+    const mockResponseText = 'some data'
+    const mockResponseData = { success: true, data: mockResponseText };
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: true,
       json: async () => mockResponseData,
@@ -37,11 +38,11 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
-        'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
+        'X-LANGCHAIN-PROXY-TOKEN': process.env.LANGCHAIN_PROXY_TOKEN,
+        'X-CUSTODIAL-MODE': 'false'
       },
     });
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toBe(JSON.stringify(mockResponseData));
+    expect(result).include(mockResponseText);
   });
 
   it('should return error response when API call fails', async () => {
@@ -62,13 +63,13 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
+        "X-CUSTODIAL-MODE": "false",
         'X-LANGCHAIN-PROXY-TOKEN': 'some-token'
       },
     });
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toContain('An error occurred while interacting with Hedera:');
-    expect(result.content[0].text).toContain('API request failed with status 500');
-    expect(result.content[0].text).toContain(mockErrorText);
+    expect(result).toContain('An error occurred while interacting with Hedera:');
+    expect(result).toContain('API request failed with status 500');
+    expect(result).toContain(mockErrorText);
   });
 
   it('should return error response when fetch throws an error', async () => {
@@ -78,16 +79,14 @@ describe('handleHederaInteraction', () => {
     const result = await handleHederaInteraction(testPrompt, mockApiUrl);
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toBe(`An error occurred while interacting with Hedera: ${mockError.toString()}`);
+    expect(result).toBe(`An error occurred while interacting with Hedera: ${mockError.toString()}`);
   });
 
   it('should return error response when API_URL is not provided', async () => {
     const result = await handleHederaInteraction(testPrompt, undefined);
 
     expect(fetch).not.toHaveBeenCalled();
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toBe('API_URL environment variable is not set.');
+    expect(result).toBe('API_URL environment variable is not set.');
   });
 
   it('should handle empty LANGCHAIN_PROXY_TOKEN', async () => {
@@ -110,10 +109,13 @@ describe('handleHederaInteraction', () => {
       }),
       headers: {
         'Content-Type': 'application/json',
+        "X-CUSTODIAL-MODE": "false",
         'X-LANGCHAIN-PROXY-TOKEN': ''  // Should send empty string when token is undefined
       },
     });
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toBe(JSON.stringify(mockResponseData));
+
+    console.log(result, typeof result)
+    console.log(mockResponseData.data, typeof mockResponseData.data)
+    expect(result).include(mockResponseData.data);
   });
 });
