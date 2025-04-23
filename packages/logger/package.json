@@ -2,6 +2,7 @@
   "name": "@mcp/logger",
   "version": "1.0.0",
   "description": "Standardized logger for the application",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
