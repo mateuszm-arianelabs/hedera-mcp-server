@@ -42,6 +42,11 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
     Logger.log(`Invoking Langchain with prompt: ${body.fullPrompt.substring(0, 50)}...`);
     const isCustodial = req.header("X-CUSTODIAL-MODE") === 'true';
 
+    console.log({
+      prompt: body.fullPrompt,
+      isCustodial
+    })
+
     const result = await langchain.invoke({
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
@@ -51,9 +56,11 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
       }
     });
 
-    const toolResponse = result.messages.find(
+    const toolResponses = result.messages.filter(
       m => m.constructor.name === "ToolMessage"
     );
+
+    const toolResponse = toolResponses.at(-1);
 
     if (!toolResponse) {
       Logger.error("No tool response found in Langchain result.");

@@ -27,7 +27,7 @@ export function createLangchain() {
     Logger.debug("ChatOpenAI initialized.");
 
     const agentKit = new HederaAgentKit(
-      hederaAccountId,
+      hederaAccountId as string,
       hederaPrivateKey,
       hederaPublicKey,
       hederaNetworkType
