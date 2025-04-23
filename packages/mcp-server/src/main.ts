@@ -1,12 +1,15 @@
 import "dotenv/config"
 import { FastMCP } from "fastmcp";
-import {hederaLangchainTool} from "./modules/hedera-langchain.js";
+import {handleHederaInteraction} from "./modules/hedera-langchain.js";
 import {Logger} from "@mcp/logger";
+import {z} from "zod";
 
 const server = new FastMCP({
   name: "Hedera MCP Server",
   version: "1.0.0",
   async authenticate(request) {
+    const sessionId = crypto.randomUUID();
+
     const token = request.headers['x-mcp-auth-token'];
     Logger.log(`token: ${token}`);
 
@@ -21,12 +24,22 @@ const server = new FastMCP({
       });
     }
 
-    return {token}
+    return { id: sessionId }
   }
 });
 
 // Tools registration
-server.addTool(hederaLangchainTool)
+server.addTool({
+  name: "interact-with-hedera",
+  description: "Interact with Hedera",
+  parameters: z.object({
+    fullPrompt: z.string()
+  }),
+  execute: async ({ fullPrompt }, {session}) => {
+    Logger.log("Received tool call: interact-with-hedera");
+    return handleHederaInteraction(fullPrompt, process.env.API_URL, session?.id);
+  }
+})
 
 const port = process.env.PORT || 3000;
 void server.start({

@@ -30,7 +30,8 @@ Logger.log("Langchain initialized.");
 
 // Define the schema for the request body
 const interactSchema = z.object({
-  fullPrompt: z.string()
+  fullPrompt: z.string(),
+  sessionId: z.string().or(z.number())
 });
 
 app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) => {
@@ -42,16 +43,11 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
     Logger.log(`Invoking Langchain with prompt: ${body.fullPrompt.substring(0, 50)}...`);
     const isCustodial = req.header("X-CUSTODIAL-MODE") === 'true';
 
-    console.log({
-      prompt: body.fullPrompt,
-      isCustodial
-    })
-
     const result = await langchain.invoke({
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
       configurable: {
-        thread_id: "MCP Server - langchain", // TODO: add separate thread id for each MCP Server Client
+        thread_id: `MCP SESSION - ${body.sessionId}`,
         isCustodial,
       }
     });
