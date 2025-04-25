@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Standardized logger for the application",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

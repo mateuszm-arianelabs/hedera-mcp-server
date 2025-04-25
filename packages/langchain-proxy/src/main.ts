@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import "dotenv/config";
 import { createLangchain } from "./create-langchain.js";
-import { HumanMessage, ToolMessage } from "@langchain/core/messages";
+import { HumanMessage } from "@langchain/core/messages";
 import { Logger } from "@mcp/logger";
 
 const app = express();
@@ -30,7 +30,8 @@ Logger.log("Langchain initialized.");
 
 // Define the schema for the request body
 const interactSchema = z.object({
-  fullPrompt: z.string()
+  fullPrompt: z.string(),
+  sessionId: z.string().or(z.number())
 });
 
 app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) => {
@@ -40,16 +41,23 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
   try {
     const body = interactSchema.parse(req.body);
     Logger.log(`Invoking Langchain with prompt: ${body.fullPrompt.substring(0, 50)}...`);
+    const isCustodial = req.header("X-CUSTODIAL-MODE") === 'true';
+
     const result = await langchain.invoke({
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
       configurable: {
-        thread_id: "MCP Server - langchain" // TODO: add separate thread id for each MCP Server Client
+        thread_id: `MCP SESSION - ${body.sessionId}`,
+        isCustodial,
       }
     });
-    Logger.debug("Langchain invocation successful.", result);
 
-    const toolResponse = result.messages.find(m => m instanceof ToolMessage);
+    const toolResponses = result.messages.filter(
+      m => m.constructor.name === "ToolMessage"
+    );
+
+    const toolResponse = toolResponses.at(-1);
+
     if (!toolResponse) {
       Logger.error("No tool response found in Langchain result.");
       throw new Error("No tool response found");
