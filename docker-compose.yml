@@ -1,0 +1,37 @@
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: mcp-server
+    image: mcp-server:latest
+    ports:
+      - "3000:8000"       # Host:Container (your mcp-server EXPOSEs 8000)
+    env_file:
+      - packages/mcp-server/.env
+    environment:
+      - PORT=8000         # inside container
+      - API_URL=http://langchain-proxy:8001/interact-with-hedera
+    depends_on:
+      - langchain-proxy
+    networks:
+      - hedera-network
+
+  langchain-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: langchain-proxy
+    image: langchain-proxy:latest
+    ports:
+      - "3001:8001"       # Host:Container (your proxy EXPOSEs 8001)
+    env_file:
+      - packages/langchain-proxy/.env
+    environment:
+      - PORT=8001         # inside container
+    networks:
+      - hedera-network
+
+networks:
+  hedera-network:
+    driver: bridge

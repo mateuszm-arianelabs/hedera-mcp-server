@@ -1,10 +1,11 @@
 {
   "name": "@mcp/logger",
   "version": "1.0.0",
-  "description": "Standardized logger for the application",
   "type": "module",
+  "description": "Standardized logger for the application",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "packageManager": "pnpm@9.10.0",
   "scripts": {
     "build": "tsc"
   },
