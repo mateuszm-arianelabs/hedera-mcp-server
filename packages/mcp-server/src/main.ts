@@ -29,7 +29,7 @@ const server = new FastMCP({
 // Tools registration
 server.addTool({
   name: "interact-with-hedera",
-  description: "Interact with Hedera",
+  description: "Use this tool to interact with the Hedera network. It can perform various operations related to HBAR (native cryptocurrency), Hedera Token Service (HTS) for fungible and non-fungible tokens (NFTs), and Hedera Consensus Service (HCS) for verifiable messaging.",
   parameters: z.object({
     fullPrompt: z.string()
   }),
