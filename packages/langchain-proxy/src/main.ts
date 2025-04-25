@@ -30,7 +30,8 @@ Logger.log("Langchain initialized.");
 
 // Define the schema for the request body
 const interactSchema = z.object({
-  fullPrompt: z.string()
+  fullPrompt: z.string(),
+  sessionId: z.string().or(z.number())
 });
 
 app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) => {
@@ -46,14 +47,16 @@ app.post("/interact-with-hedera", verifyLangchainProxyToken, async (req, res) =>
       messages: [new HumanMessage(body.fullPrompt)]
     }, {
       configurable: {
-        thread_id: "MCP Server - langchain", // TODO: add separate thread id for each MCP Server Client
+        thread_id: `MCP SESSION - ${body.sessionId}`,
         isCustodial,
       }
     });
 
-    const toolResponse = result.messages.find(
+    const toolResponses = result.messages.filter(
       m => m.constructor.name === "ToolMessage"
     );
+
+    const toolResponse = toolResponses.at(-1);
 
     if (!toolResponse) {
       Logger.error("No tool response found in Langchain result.");

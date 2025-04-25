@@ -2,8 +2,8 @@ import {Tool} from "fastmcp";
 import {z} from "zod";
 import {Logger} from "@mcp/logger";
 
-export async function handleHederaInteraction(fullPrompt: string, apiUrl: string | undefined) {
-    Logger.debug(`Handling Hedera interaction with prompt: ${fullPrompt.substring(0, 50)}...`);
+export async function handleHederaInteraction(fullPrompt: string, apiUrl: string | undefined, sessionId?: string) {
+    Logger.debug(`Handling Hedera interaction with prompt: ${fullPrompt}`);
     if (!apiUrl) {
         Logger.error("API_URL environment variable is not set.");
         return "API_URL environment variable is not set."
@@ -17,7 +17,8 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
         const response = await fetch(apiUrl, {
             method: "POST",
             body: JSON.stringify({
-                fullPrompt
+                fullPrompt,
+                sessionId
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -49,17 +50,5 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
             errorString = String(e);
         }
         return `An error occurred while interacting with Hedera: ${errorString}`
-    }
-}
-
-export const hederaLangchainTool: Tool<any, any> = {
-    name: "interact-with-hedera",
-    description: "Interact with Hedera",
-    parameters: z.object({
-        fullPrompt: z.string()
-    }),
-    execute: async ({ fullPrompt }) => {
-        Logger.log("Received tool call: interact-with-hedera");
-        return handleHederaInteraction(fullPrompt, process.env.API_URL);
     }
 }
