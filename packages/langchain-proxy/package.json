@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/main.js",
+  "packageManager": "pnpm@9.10.0",
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "build": "tsc"
@@ -27,5 +28,8 @@
     "@types/node": "^22.7.0",
     "typescript": "^5.5.2",
     "tsx": "^4.19.1"
-  }
+  },
+  "files": [
+    "build"
+  ]
 }
