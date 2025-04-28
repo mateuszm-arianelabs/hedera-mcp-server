@@ -1,8 +1,9 @@
 import "dotenv/config"
+import * as fastmcp from "fastmcp";
 import { FastMCP } from "fastmcp";
-import {handleHederaInteraction} from "./modules/hedera-langchain.js";
-import {Logger} from "@mcp/logger";
-import {z} from "zod";
+import { Logger } from "@mcp/logger";
+import { z } from "zod";
+import { handleHederaInteraction } from "./modules/hedera-langchain.js";
 
 const server = new FastMCP({
   name: "Hedera MCP Server",
@@ -10,9 +11,17 @@ const server = new FastMCP({
   async authenticate(request) {
     const sessionId = crypto.randomUUID();
 
-    // if ENABLE_AUTH is set to false, skip authentication
-    if(process.env.ENABLE_AUTH === 'false') {
-      return { id: sessionId }
+    const accountId = request.headers['x-hedera-account-id'] as string | undefined;
+
+    if (!accountId) {
+      throw new Response(null, {
+        status: 400,
+        statusText: "Missing X-HEDERA-ACCOUNT-ID header",
+      });
+    }
+
+    if (process.env.ENABLE_AUTH === 'false') {
+      return { id: sessionId, accountId };
     }
 
     const token = request.headers['x-mcp-auth-token'];
@@ -27,7 +36,7 @@ const server = new FastMCP({
       });
     }
 
-    return { id: sessionId }
+    return { id: sessionId, accountId };
   }
 });
 
@@ -36,13 +45,21 @@ server.addTool({
   name: "interact-with-hedera",
   description: "Interact with Hedera",
   parameters: z.object({
-    fullPrompt: z.string()
+    fullPrompt: z.string(),
   }),
-  execute: async ({ fullPrompt }, {session}) => {
+  execute: async ({ fullPrompt }, context) => {
     Logger.log("Received tool call: interact-with-hedera");
-    return handleHederaInteraction(fullPrompt, process.env.API_URL, session?.id);
+
+    const accountId = context.session?.accountId;
+
+    if (!accountId) {
+      Logger.error("Session missing accountId");
+      throw new Error("Session is missing accountId.");
+    }
+
+    return handleHederaInteraction(fullPrompt, accountId, process.env.API_URL, context.session?.id);
   }
-})
+});
 
 const port = process.env.PORT || 3000;
 void server.start({
@@ -52,3 +69,23 @@ void server.start({
     port: Number(port)
   }
 })
+
+class FastMCPSession extends fastmcp.FastMCPSession {
+  originalEmit = fastmcp.FastMCPSession.prototype.emit;
+}
+
+Object.defineProperty(fastmcp.FastMCPSession.prototype, "originalEmit", {
+  value: fastmcp.FastMCPSession.prototype.emit,
+  writable: false,
+});
+
+// suppress error event
+fastmcp.FastMCPSession.prototype.emit = function (
+  this: FastMCPSession,
+  event: any,
+  ...args: any[]
+) {
+  if (event !== "error") {
+    return this.originalEmit(event, ...args);
+  }
+};

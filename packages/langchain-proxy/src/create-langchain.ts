@@ -28,8 +28,7 @@ export function createLangchain() {
 
     const agentKit = new HederaAgentKit(
       hederaAccountId as string,
-      hederaPrivateKey,
-      hederaPublicKey,
+      undefined,
       hederaNetworkType
     )
     Logger.debug("HederaAgentKit initialized.");
