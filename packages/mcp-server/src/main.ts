@@ -10,6 +10,11 @@ const server = new FastMCP({
   async authenticate(request) {
     const sessionId = crypto.randomUUID();
 
+    // if ENABLE_AUTH is set to false, skip authentication
+    if(process.env.ENABLE_AUTH === 'false') {
+      return { id: sessionId }
+    }
+
     const token = request.headers['x-mcp-auth-token'];
 
     // Parse the env variable as an array (assuming it's a comma-separated string)
