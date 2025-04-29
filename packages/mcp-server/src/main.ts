@@ -10,19 +10,11 @@ const server = new FastMCP({
   version: "1.0.0",
   async authenticate(request) {
     const sessionId = crypto.randomUUID();
+    const accountId = request.headers['x-hedera-account-id'];
 
-    const accountId = request.headers['x-hedera-account-id'] as string | undefined;
-
-    if (!accountId) {
-      throw new Response(null, {
-        status: 400,
-        statusText: "Missing X-HEDERA-ACCOUNT-ID header",
-      });
-    }
-
-    // if ENABLE_AUTH is set to false, skip authentication
-    if(process.env.ENABLE_AUTH === 'false') {
-      return { id: sessionId }
+    // if ENABLE_AUTH is not set to true, skip authentication
+    if (process.env.ENABLE_AUTH !== 'true') {
+      return { id: sessionId, accountId };
     }
 
     const token = request.headers['x-mcp-auth-token'];
@@ -51,11 +43,13 @@ server.addTool({
   execute: async ({ fullPrompt }, context) => {
     Logger.log("Received tool call: interact-with-hedera");
 
-    const accountId = context.session?.accountId;
+    const isCustodial = process.env.CUSTODIAL_MODE === 'true';
 
-    if (!accountId) {
-      Logger.error("Session missing accountId");
-      throw new Error("Session is missing accountId.");
+    const accountId = context.session?.accountId as string;
+
+    if (!isCustodial && !accountId) {
+      Logger.error("Non-custodial mode requires accountId");
+      throw new Error("Non-custodial mode requires accountId (missing X-HEDERA-ACCOUNT-ID)");
     }
 
     return handleHederaInteraction(fullPrompt, accountId, process.env.API_URL, context.session?.id);
