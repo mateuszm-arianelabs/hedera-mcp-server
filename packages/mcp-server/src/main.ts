@@ -10,8 +10,8 @@ const server = new FastMCP({
   async authenticate(request) {
     const sessionId = crypto.randomUUID();
 
-    // if ENABLE_AUTH is set to false, skip authentication
-    if(process.env.ENABLE_AUTH === 'false') {
+    // if ENABLE_AUTH is not set to true, skip authentication
+    if(process.env.ENABLE_AUTH !== 'true') {
       return { id: sessionId }
     }
 
