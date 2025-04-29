@@ -20,8 +20,9 @@ const server = new FastMCP({
       });
     }
 
-    if (process.env.ENABLE_AUTH === 'false') {
-      return { id: sessionId, accountId };
+    // if ENABLE_AUTH is set to false, skip authentication
+    if(process.env.ENABLE_AUTH === 'false') {
+      return { id: sessionId }
     }
 
     const token = request.headers['x-mcp-auth-token'];
