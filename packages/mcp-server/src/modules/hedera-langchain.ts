@@ -1,8 +1,6 @@
-import {Tool} from "fastmcp";
-import {z} from "zod";
 import {Logger} from "@mcp/logger";
 
-export async function handleHederaInteraction(fullPrompt: string, apiUrl: string | undefined, sessionId?: string) {
+export async function handleHederaInteraction(fullPrompt: string, accountId: string | undefined, apiUrl: string | undefined, sessionId?: string) {
     Logger.debug(`Handling Hedera interaction with prompt: ${fullPrompt}`);
     if (!apiUrl) {
         Logger.error("API_URL environment variable is not set.");
@@ -18,7 +16,8 @@ export async function handleHederaInteraction(fullPrompt: string, apiUrl: string
             method: "POST",
             body: JSON.stringify({
                 fullPrompt,
-                sessionId
+                sessionId,
+                accountId,
             }),
             headers: {
                 "Content-Type": "application/json",

@@ -20,7 +20,7 @@
     "@types/express": "^5.0.1",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "hedera-agent-kit": "^1.0.6",
+    "hedera-agent-kit": "mateuszm-arianelabs/hedera-agent-kit#develop",
     "zod": "^3.24.2"
   },
   "devDependencies": {
