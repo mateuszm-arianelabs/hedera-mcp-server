@@ -11,13 +11,11 @@ export function createLangchain() {
     const llmApiKey = process.env.OPENAI_API_KEY;
     const hederaAccountId = process.env.HEDERA_ACCOUNT_ID;
     const hederaPrivateKey = process.env.HEDERA_PRIVATE_KEY;
-    const hederaPublicKey = process.env.HEDERA_PUBLIC_KEY;
     const hederaNetworkType = process.env.HEDERA_NETWORK_TYPE as "mainnet" | "testnet" | "previewnet";
 
     if (!llmApiKey) Logger.warn("OPENAI_API_KEY environment variable not set.");
     if (!hederaAccountId) Logger.warn("HEDERA_ACCOUNT_ID environment variable not set.");
     if (!hederaPrivateKey) Logger.warn("HEDERA_PRIVATE_KEY environment variable not set.");
-    if (!hederaPublicKey) Logger.warn("HEDERA_PUBLIC_KEY environment variable not set.");
     if (!hederaNetworkType) Logger.warn("HEDERA_NETWORK_TYPE environment variable not set.");
 
     const llm = new ChatOpenAI({
@@ -28,7 +26,7 @@ export function createLangchain() {
 
     const agentKit = new HederaAgentKit(
       hederaAccountId as string,
-      undefined,
+      hederaPrivateKey,
       hederaNetworkType
     )
     Logger.debug("HederaAgentKit initialized.");
